@@ -2,8 +2,8 @@ set -e
 
 build () {
 
-	bucket_name=gs://blog-wadfaf
-	sudo rm -r docs	
+	bucket_name=gs://blog_adfda 
+	sudo rm --recursive --force docs	
 	mkdir ./docs
 
 	(cd ./site && sudo bundle exec jekyll b \
