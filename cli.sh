@@ -1,20 +1,35 @@
+set -e
+
+build () {
+
+	bucket_name=gs://blog-wadfaf
+	sudo rm -r docs	
+	mkdir ./docs
+
+	(cd ./site && sudo bundle exec jekyll b \
+		--source ./ \
+		--destination ../docs)
+
+	if [[ $(gsutil du "$bucket_name" | wc -l) -gt 0 ]]
+	then 
+		gsutil -m rm -rf "$bucket_name/*"; 
+	fi 
+
+	# Push to bucket
+	gsutil cp \
+		-r \
+		./docs/* \
+		"$bucket_name"
+	
+	# Delete local files
+	sudo rm -r docs	
+}
 
 
 main_commands () {
 	case $1 in 
 		"--build" | "-b")
-
-			bundle exec jekyll b \
-				--source ./site
-				--destination ./docs
-				
-			# Push to bucket
-			gsutil rsync \
-				./docs \
-				gs://arch-custom-repos	
-			
-			# Delete local files
-			sudo rm -r docs	
+			build
 			;;
 		"--help" | "-h")
 			echo help 
